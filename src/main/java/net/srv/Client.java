@@ -15,6 +15,7 @@ public class Client {
     private final LinkedList<Client> followers;
     private final LinkedList<Client> blocked;
     private int connectionID = -1;
+    private LinkedList<String> backlog;
 
     public Client(String username, String password, String birthday){
         this.username = username;
@@ -164,5 +165,13 @@ public class Client {
         if (client != null)
             return following.contains(client);
         return false;
+    }
+    public void backlog(String msg){
+        backlog.add(msg);
+    }
+    public String[] getBackLog(){
+        String[] back = backlog.toArray(new String[backlog.size()]);
+        backlog.clear();
+        return back;
     }
 }

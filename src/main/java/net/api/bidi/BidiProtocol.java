@@ -33,6 +33,11 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         connections.send(connectionId, "11 2");
                     }
                     c.setConnectionID(connectionId);
+                    //send backlog
+                    String[] backlog = c.getBackLog();
+                    for (String str: backlog) {
+                        connections.send(connectionId,str);
+                    }
                 } else {
                     connections.send(connectionId, "11 2");
                 }
@@ -68,14 +73,22 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 c = connections.getClientByID(connectionId);
                 if(c != null && c.isLoggedIn()){ //send to followers
                     c.incrementPost();
-                    for(Client client : c.getFollowers()){
-                        connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                    for(Client client : c.getFollowers()) {
+                        if (client.isLoggedIn()) {
+                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                        } else{
+                            client.backlog( 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                        }
                     }
                     int index = strings[1].indexOf("@");
                     while (index >= 0) { //send to @'s
                         String name = strings[1].substring(index + 1, strings[1].indexOf(" "));
                         Client client = connections.getClient(name);
-                        connections.send(client.getConnectionID(),9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                        if(client.isLoggedIn()) {
+                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                        } else {
+                            client.backlog( 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                        }
                         index = strings[1].indexOf("@", strings[1].indexOf(" ")+1);
                     }
                 } else{
@@ -86,12 +99,16 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 String censured = strings[1]; //TODO censure
                 c = connections.getClientByID(connectionId);
                 Client recipient = connections.getClient(strings[1]);
-                if(c != null && c.isLoggedIn() && c.isFollowing(recipient)){
-                    connections.send(recipient.getConnectionID(),9 + " " + 0 + " " + c.getUsername() + " " + censured);
+                if(c != null && c.isLoggedIn() && c.isFollowing(recipient)) {
+                    if (recipient.isLoggedIn()) {
+                        connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + " " + censured);
+                    } else{
+                        recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censured);
+                    }
                 }
                 connections.send(connectionId,"11 6");
                 break;
-            case 7:
+            case 7: //statlog
                 c = connections.getClientByID(connectionId);
                 if(c != null && c.isLoggedIn()) {
                     Client[] cl = connections.getLoggedInUsers();
@@ -104,7 +121,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     connections.send(connectionId, "11 7");
                 }
                 break;
-            case 8:
+            case 8: // stat
                 String[] usernames = strings[1].split("\\|");
                 c = connections.getClientByID(connectionId);
                 if(c!=null && c.isLoggedIn()){
@@ -121,7 +138,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     connections.send(connectionId, "11 8");
                 }
                 break;
-            case 12:
+            case 12: // block
                 Client client = connections.getClient(strings[1]);
                 if(client != null){
                     connections.getClientByID(connectionId).block(client);

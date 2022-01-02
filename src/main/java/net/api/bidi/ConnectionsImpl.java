@@ -3,6 +3,7 @@ package net.api.bidi;
 import net.srv.Client;
 import net.srv.ConnectionHandler;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,17 +23,23 @@ public class ConnectionsImpl  implements Connections<String>{
 
     @Override
     public boolean send(int connectionId, String msg) {
+        ConnectionHandler handler = connections.get(connectionId);
+        try {
+            handler.send(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public void broadcast(String msg) {
-
+        //TODO implement
     }
 
     @Override
     public void disconnect(int connectionId) {
-
+        //TODO implement
     }
     public boolean register(Client client){
         if(clients.containsKey(client.getUsername())){
