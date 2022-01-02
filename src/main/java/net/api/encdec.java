@@ -34,8 +34,7 @@ public class encdec implements MessageEncoderDecoder<String> {
             case 1: return String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes,2,bytes.length)); //Register
             case 2: return String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes,2, bytes.length - 1)) + " " + bytes[bytes.length - 1]; //Login
             case 3: return String.valueOf(op); // Logout
-            case 4:
-                break;
+            case 4: return String.valueOf(op) + " " + bytes[2] + " " + new String(bytes,3,bytes.length); //Follow/Unfollow
             case 5:
                 break;
             case 6:
