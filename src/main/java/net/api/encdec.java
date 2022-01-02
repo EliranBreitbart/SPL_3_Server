@@ -30,29 +30,26 @@ public class encdec implements MessageEncoderDecoder<String> {
     private String popString() {
         //get op and work accordingly
         short op = bytesToShort(Arrays.copyOfRange(bytes,0,2));
-        switch (op){
-            case 1: return String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes,2,bytes.length)); //Register
-            case 2: return String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes,2, bytes.length - 1)) + " " + bytes[bytes.length - 1]; //Login
-            case 3: return String.valueOf(op); // Logout
-            case 4: return String.valueOf(op) + " " + bytes[2] + " " + new String(bytes,3,bytes.length); //Follow/Unfollow
-            case 5:
+        String result ="";
+        switch (op) {
+            case 1: //Register
+            case 5: //Post message
+            case 6: //PM message
+            case 8: //STAT message
+            case 12: //Block Message
+                result = String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length));
                 break;
-            case 6:
+            case 2:
+                result = String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length - 1)) + " " + bytes[bytes.length - 1]; //Login
+            break;
+            case 3: // Logout
+            case 7: // Logstat
+                result = String.valueOf(op);
                 break;
-            case 7:
-                break;
-            case 8:
-                break;
-            case 9:
-                break;
-            case 10: //ACK
-                break;
-            case 11:
-                break;
-            case 12:
-                break;
+            case 4:
+                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, bytes.length); //Follow/Unfollow
+            break;
         }
-        String result = new String(bytes, 0, len);
         len = 0;
         return result;
     }
