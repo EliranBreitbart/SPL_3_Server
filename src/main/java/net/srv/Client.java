@@ -14,6 +14,7 @@ public class Client {
     private final LinkedList<Client> following;
     private final LinkedList<Client> followers;
     private final LinkedList<Client> blocked;
+    private int connectionID = -1;
 
     public Client(String username, String password, String birthday){
         this.username = username;
@@ -140,4 +141,28 @@ public class Client {
         client.following.remove(this);
     }
 
+    public int getConnectionID() {
+        return connectionID;
+    }
+
+    public void setConnectionID(int connectionID) {
+        this.connectionID = connectionID;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public LinkedList<Client> getFollowing() {
+        return following;
+    }
+
+    public LinkedList<Client> getFollowers() {
+        return followers;
+    }
+    public boolean isFollowing(Client client) {
+        if (client != null)
+            return following.contains(client);
+        return false;
+    }
 }

@@ -46,8 +46,8 @@ public class encdec implements MessageEncoderDecoder<String> {
             case 7: // Logstat
                 result = String.valueOf(op);
                 break;
-            case 4:
-                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, bytes.length); //Follow/Unfollow
+            case 4: //Follow/Unfollow
+                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, bytes.length);
             break;
         }
         len = 0;

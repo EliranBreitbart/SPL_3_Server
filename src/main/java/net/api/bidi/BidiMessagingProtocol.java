@@ -12,13 +12,4 @@ public interface BidiMessagingProtocol<T>  {
      * @return true if the connection should be terminated
      */
     boolean shouldTerminate();
-
-	interface Connections<T> {
-
-		boolean send(int connectionId, T msg);
-
-		void broadcast(T msg);
-
-		void disconnect(int connectionId);
-	}
 }

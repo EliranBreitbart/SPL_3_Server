@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
+    private static int idCounter = 0;
 
     private final MessagingProtocol<T> protocol;
     private final MessageEncoderDecoder<T> encdec;
@@ -15,11 +16,14 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private volatile boolean connected = true;
+    public final int id;
 
     public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, MessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
+        id = idCounter;
+        idCounter++;
     }
 
     @Override
