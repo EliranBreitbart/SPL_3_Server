@@ -9,10 +9,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl  implements Connections<String>{
-    private static ConcurrentHashMap<String, Client> clients;
-    private static ConcurrentHashMap<Integer, ConnectionHandler> connections;
-
-    public ConnectionsImpl(){
+    private ConcurrentHashMap<String, Client> clients;
+    private ConcurrentHashMap<Integer, ConnectionHandler> connections;
+    private static class SingletonHolder {
+        private static ConnectionsImpl instance = new ConnectionsImpl();
+    }
+    public static ConnectionsImpl getInstance(){
+        return SingletonHolder.instance;
+    }
+    private ConnectionsImpl(){
         if(connections == null){
             connections = new ConcurrentHashMap<>();
         }

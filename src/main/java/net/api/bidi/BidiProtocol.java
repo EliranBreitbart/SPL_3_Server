@@ -8,6 +8,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
     private boolean terminate = false;
     @Override
     public void start(int connectionId, Connections<String> connections) {
+        //TODO use the getInstance
         this.connectionId = connectionId;
         this.connections = (ConnectionsImpl) connections;
     }
