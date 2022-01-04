@@ -1,7 +1,8 @@
 package net.srv;
 
 import net.api.MessageEncoderDecoder;
-import net.api.MessagingProtocol;
+import net.api.bidi.BidiMessagingProtocol;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.net.Socket;
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
     private static int idCounter = 0;
 
-    private final MessagingProtocol<T> protocol;
+    private final BidiMessagingProtocol<T> protocol;
     private final MessageEncoderDecoder<T> encdec;
     private final Socket sock;
     private BufferedInputStream in;
@@ -18,7 +19,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private volatile boolean connected = true;
     public final int id;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, MessagingProtocol<T> protocol) {
+    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;

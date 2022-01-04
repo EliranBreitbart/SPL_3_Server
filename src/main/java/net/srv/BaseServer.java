@@ -1,22 +1,24 @@
 package net.srv;
 
-import bgu.spl.net.api.MessageEncoderDecoder;
-import bgu.spl.net.api.MessagingProtocol;
+import net.api.MessageEncoderDecoder;
+import net.api.bidi.BidiMessagingProtocol;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.Bidi;
 import java.util.function.Supplier;
 
 public abstract class BaseServer<T> implements Server<T> {
 
     private final int port;
-    private final Supplier<MessagingProtocol<T>> protocolFactory;
+    private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
 
     public BaseServer(
             int port,
-            Supplier<MessagingProtocol<T>> protocolFactory,
+            Supplier<BidiMessagingProtocol<T>> protocolFactory,
             Supplier<MessageEncoderDecoder<T>> encdecFactory) {
 
         this.port = port;
@@ -58,4 +60,13 @@ public abstract class BaseServer<T> implements Server<T> {
 
     protected abstract void execute(BlockingConnectionHandler<T>  handler);
 
+    public static <T> BaseServer<T> threadPerClient(int port, Supplier<BidiMessagingProtocol<T>> protocolFactory, Supplier<MessageEncoderDecoder<T>> encoderDecoderFactory) {
+        return new BaseServer<T>(port, protocolFactory, encoderDecoderFactory) {
+            @Override
+            protected void execute(BlockingConnectionHandler<T> handler) {
+                System.out.println("Client connected");
+                new Thread(handler).start();
+            }
+        };
+    }
 }

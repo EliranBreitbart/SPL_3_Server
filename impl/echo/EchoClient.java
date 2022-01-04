@@ -21,7 +21,7 @@ public class EchoClient {
         }
 
         //BufferedReader and BufferedWriter automatically using UTF-8 encoding
-        try (Socket sock = new Socket(args[0], 7777);
+        try (Socket sock = new Socket(args[0], 4444);
                 BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()))) {
 

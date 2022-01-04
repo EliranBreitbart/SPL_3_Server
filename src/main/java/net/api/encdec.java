@@ -42,7 +42,6 @@ public class encdec implements MessageEncoderDecoder<String> {
                         content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
                         result = join(new byte[][]{opcodeByte, one, username, zero, content, zero}, 5 + username.length + content.length);
                 }
-
             case 10: //ACK Message
                 switch (msg){
                     case 1: //register
@@ -56,11 +55,11 @@ public class encdec implements MessageEncoderDecoder<String> {
                         String[] users = message.split("\0", -2);
                         for(String user : users){
                             String[] userB = user.split(" ", -2);
-                            byte[] opCode = shortToBytes(Short.valueOf(userB[0]));
-                            byte[] msType = shortToBytes(Short.valueOf(userB[1]));
-                            byte[] age = shortToBytes(Short.valueOf(userB[2]));;
-                            byte[] numPosts = shortToBytes(Short.valueOf(userB[3]));
-                            byte[] numFollowers = shortToBytes(Short.valueOf(userB[4]));
+                            byte[] opCode = shortToBytes(Short.parseShort(userB[0]));
+                            byte[] msType = shortToBytes(Short.parseShort(userB[1]));
+                            byte[] age = shortToBytes(Short.parseShort(userB[2]));
+                            byte[] numPosts = shortToBytes(Short.parseShort(userB[3]));
+                            byte[] numFollowers = shortToBytes(Short.parseShort(userB[4]));
                             result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, {0}}, 13 + result.length);
                         }
                 }
