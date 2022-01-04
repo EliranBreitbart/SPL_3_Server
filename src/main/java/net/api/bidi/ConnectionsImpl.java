@@ -53,6 +53,13 @@ public class ConnectionsImpl  implements Connections<String>{
         clients.put(client.getUsername(), client);
         return true;
     }
+    public boolean register(ConnectionHandler handler){
+        if(connections.containsKey(handler.getID())){
+            return false;
+        }
+        connections.put(handler.getID(), handler);
+        return true;
+    }
     public Client getClient(String username){
         return clients.get(username);
     }

@@ -19,7 +19,6 @@ public class encdec implements MessageEncoderDecoder<String> {
 
     @Override
     public byte[] encode(String message) {
-
         String[] splitMsg = message.split(" ", -2);
         Short op = Short.parseShort(splitMsg[0]);
         byte[] opcodeByte = shortToBytes(op);
@@ -36,20 +35,25 @@ public class encdec implements MessageEncoderDecoder<String> {
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
                         content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
                         result = join(new byte[][]{opcodeByte, zero, username, zero, content, zero}, 5 + username.length + content.length);
+                        break;
                     case 1: //Post message
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
                         one = "1".getBytes(StandardCharsets.UTF_8);
                         content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
                         result = join(new byte[][]{opcodeByte, one, username, zero, content, zero}, 5 + username.length + content.length);
+                        break;
                 }
+                break;
             case 10: //ACK Message
                 switch (msg){
                     case 1: //register
                     case 3: //logout
                         result = join(new byte[][]{opcodeByte, msgType}, 4);
+                        break;
                     case 4: //follow/unfollow
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
                         result = join(new byte[][]{opcodeByte, msgType, username, zero}, 5 + username.length);
+                        break;
                     case 7: //logstat
                     case 8: //stat
                         String[] users = message.split("\0", -2);
@@ -62,7 +66,9 @@ public class encdec implements MessageEncoderDecoder<String> {
                             byte[] numFollowers = shortToBytes(Short.parseShort(userB[4]));
                             result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, {0}}, 13 + result.length);
                         }
+                        break;
                 }
+                break;
             case 11: //Error Message
                 switch (msg){
                     case 1: //register
@@ -75,7 +81,9 @@ public class encdec implements MessageEncoderDecoder<String> {
                     case 8: //stat
                     case 12: //block
                         result = join(new byte[][]{opcodeByte, msgType}, 4);
+                        break;
                 }
+                break;
         }
         result = join(new byte[][]{result, ";".getBytes()}, result.length +1);
         return result;
@@ -117,10 +125,10 @@ public class encdec implements MessageEncoderDecoder<String> {
             case 6: //PM message
             case 8: //STAT message
             case 12: //Block Message
-                result = String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length));
+                result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length));
                 break;
             case 2:
-                result = String.valueOf(op) + " " + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length - 1)) + " " + bytes[bytes.length - 1]; //Login
+                result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length - 1)) + " " + bytes[bytes.length - 1]; //Login
             break;
             case 3: // Logout
             case 7: // Logstat

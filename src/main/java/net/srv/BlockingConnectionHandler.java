@@ -2,6 +2,8 @@ package net.srv;
 
 import net.api.MessageEncoderDecoder;
 import net.api.bidi.BidiMessagingProtocol;
+import net.api.bidi.Connections;
+import net.api.bidi.ConnectionsImpl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,6 +27,8 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         this.protocol = protocol;
         id = idCounter;
         idCounter++;
+        protocol.start(id, (Connections<T>) ConnectionsImpl.getInstance());
+        ConnectionsImpl.getInstance().register(this);
     }
 
     @Override
@@ -38,6 +42,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
+                    System.out.println(nextMessage);
                     protocol.process(nextMessage);
                 }
             }
@@ -60,5 +65,10 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             out.write(encdec.encode(msg));
             out.flush();
         }
+    }
+
+    @Override
+    public int getID() {
+        return id;
     }
 }

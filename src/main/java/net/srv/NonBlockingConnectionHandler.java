@@ -118,4 +118,9 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         }
     }
+
+    @Override
+    public int getID() {
+        return 0;
+    }
 }
