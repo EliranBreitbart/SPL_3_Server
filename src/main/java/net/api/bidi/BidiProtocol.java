@@ -48,8 +48,9 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 if(c != null && c.logout()){
                     connections.send(connectionId,"10 3");
                     c.setConnectionID(-1);
+                } else {
+                    connections.send(connectionId, "11 3");
                 }
-                connections.send(connectionId,"11 3");
                 break;
             case 4: // follow/unfollow
                 c = connections.getClientByID(connectionId);
@@ -82,40 +83,53 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         }
                     }
                     int index = strings[1].indexOf("@");
+                    String str = strings[1];
                     while (index >= 0) { //send to @'s
-                        String name = strings[1].substring(index + 1, strings[1].indexOf(" "));
+                        String name = "";
+                        if (str.indexOf(" ") != -1) {
+                            name = str.substring(index + 1, str.indexOf(" "));
+                        } else {
+                            name = str.substring(index + 1);
+                        }
+                        System.out.println(name);
+                        str = str.substring(str.indexOf("@") + 1);
+                        if (str.indexOf(" ") != -1) {
+                            str = str.substring(str.indexOf(" ") + 1);
+                        }
+                        index = str.indexOf("@");
+
                         Client client = connections.getClient(name);
-                        if(client.isLoggedIn()) {
+                        if (client.isLoggedIn()) {
                             connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
                         } else {
-                            client.backlog( 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                            client.backlog(9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
                         }
-                        index = strings[1].indexOf("@", strings[1].indexOf(" ")+1);
                     }
                 } else{
                     connections.send(connectionId,"11 5");
                 }
                 break;
             case 6: //PM message
-                String censured = strings[1]; //TODO censure
+                String censored = strings[1]; //TODO censor
                 c = connections.getClientByID(connectionId);
                 Client recipient = connections.getClient(strings[1]);
                 if(c != null && c.isLoggedIn() && c.isFollowing(recipient)) {
                     if (recipient.isLoggedIn()) {
-                        connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + " " + censured);
+                        connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     } else{
-                        recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censured);
+                        recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     }
+                }else {
+                    connections.send(connectionId, "11 6");
                 }
-                connections.send(connectionId,"11 6");
                 break;
-            case 7: //statlog
+            case 7: //logstat
                 c = connections.getClientByID(connectionId);
                 if(c != null && c.isLoggedIn()) {
                     Client[] cl = connections.getLoggedInUsers();
                     String multiAck = "";
                     for (Client client : cl) {
-                        multiAck+= "10 7 " + " " + client.getAge() + " " + client.getPosts() + " " + client.getNumFollowers() + " " + client.getNumFollowing() + "\0";
+                        multiAck+= "10 7 " + client.getAge() + " " + client.getPosts() + " " + client.getNumFollowers() + " " + client.getNumFollowing() + "\0";
                     }
                     connections.send(connectionId,multiAck);
                 } else{
@@ -128,13 +142,15 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 if(c!=null && c.isLoggedIn()){
                     String multiAck= "";
                     for (String username: usernames) {
-                        //TODO change according to reply in forum
                         Client client = connections.getClient(username);
                         if(client!= null){
-                            multiAck+= "10 8 " + " " + client.getAge() + " " + client.getPosts() + " " + client.getNumFollowers() + " " + client.getNumFollowing() + "\0";
+                            multiAck+= "10 8 " + client.getAge() + " " + client.getPosts() + " " + client.getNumFollowers() + " " + client.getNumFollowing() + "\0";
+                        } else {
+                            multiAck = "11 8";
+                            break;
                         }
-                        connections.send(connectionId,multiAck);
                     }
+                    connections.send(connectionId,multiAck);
                 } else {
                     connections.send(connectionId, "11 8");
                 }
