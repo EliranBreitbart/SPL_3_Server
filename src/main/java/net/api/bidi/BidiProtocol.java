@@ -6,6 +6,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
     private int connectionId;
     private ConnectionsImpl connections;
     private boolean terminate = false;
+    public static final String[] badWords = {"war", "Trump", "gnome", "assignment", "spl"};
     @Override
     public void start(int connectionId, Connections<String> connections) {
         //TODO use the getInstance
@@ -71,10 +72,10 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 }
                 break;
             case 5: // post message
-                //TODO save message to database on server
                 c = connections.getClientByID(connectionId);
                 if(c != null && c.isLoggedIn()){ //send to followers
                     c.incrementPost();
+                    c.saveMessage(strings[1]);
                     for(Client client : c.getFollowers()) {
                         if (client.isLoggedIn()) {
                             connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
@@ -110,13 +111,15 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 }
                 break;
             case 6: //PM message
-                String censored = strings[1]; //TODO censor
+                String censored = filter(strings[1]);
                 c = connections.getClientByID(connectionId);
                 Client recipient = connections.getClient(strings[1]);
                 if(c != null && c.isLoggedIn() && c.isFollowing(recipient)) {
                     if (recipient.isLoggedIn()) {
+                        c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                         connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     } else{
+                        c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                         recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     }
                 }else {
@@ -169,5 +172,24 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
     @Override
     public boolean shouldTerminate() {
         return terminate;
+    }
+
+    public static String filter(String msg){
+        String words[] = msg.split(" ");
+        String str="";
+        for (int i = 0; i < words.length; i++) {
+            for(String filter : badWords){
+                String noPunc = words[i].replaceAll("[().!?.,]","");
+                if(noPunc.equals(filter)){
+                    words[i] = words[i].replace(filter,"<filtered>");
+                    break;
+                }
+            }
+            str+= words[i];
+            if(i!= words.length -1){
+                str+= " ";
+            }
+        }
+        return str;
     }
 }

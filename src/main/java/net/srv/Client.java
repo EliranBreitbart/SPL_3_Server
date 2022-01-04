@@ -14,6 +14,7 @@ public class Client {
     private final LinkedList<Client> following;
     private final LinkedList<Client> followers;
     private final LinkedList<Client> blocked;
+    private final LinkedList<String> messages;
     private int connectionID = -1;
     private LinkedList<String> backlog;
 
@@ -25,6 +26,8 @@ public class Client {
         following = new LinkedList<>();
         followers = new LinkedList<>();
         blocked = new LinkedList<>();
+        messages = new LinkedList<>();
+        backlog = new LinkedList<>();
     }
 
     /**
@@ -173,5 +176,8 @@ public class Client {
         String[] back = backlog.toArray(new String[backlog.size()]);
         backlog.clear();
         return back;
+    }
+    public void saveMessage(String msg){
+        messages.add(msg);
     }
 }
