@@ -1,5 +1,6 @@
 package net.api;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class encdec implements MessageEncoderDecoder<String> {
@@ -18,7 +19,87 @@ public class encdec implements MessageEncoderDecoder<String> {
 
     @Override
     public byte[] encode(String message) {
-        return new byte[0];
+
+        String[] splitMsg = message.split(" ", -2);
+        Short op = Short.parseShort(splitMsg[0]);
+        byte[] opcodeByte = shortToBytes(op);
+        Short msg = Short.parseShort(splitMsg[1]);
+        byte[] msgType = shortToBytes(msg);
+        byte[] zero = "0".getBytes(StandardCharsets.UTF_8);
+        byte[] username, one, content;
+        byte[] result = {};
+
+        switch (op) {
+            case 9: //Notification Message
+                switch (msg){
+                    case 0: //PM message
+                        username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
+                        content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
+                        result = join(new byte[][]{opcodeByte, zero, username, zero, content, zero}, 5 + username.length + content.length);
+                    case 1: //Post message
+                        username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
+                        one = "1".getBytes(StandardCharsets.UTF_8);
+                        content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
+                        result = join(new byte[][]{opcodeByte, one, username, zero, content, zero}, 5 + username.length + content.length);
+                }
+
+            case 10: //ACK Message
+                switch (msg){
+                    case 1: //register
+                    case 3: //logout
+                        result = join(new byte[][]{opcodeByte, msgType}, 4);
+                    case 4: //follow/unfollow
+                        username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
+                        result = join(new byte[][]{opcodeByte, msgType, username, zero}, 5 + username.length);
+                    case 7: //logstat
+                    case 8: //stat
+                        String[] users = message.split("\0", -2);
+                        for(String user : users){
+                            String[] userB = user.split(" ", -2);
+                            byte[] opCode = shortToBytes(Short.valueOf(userB[0]));
+                            byte[] msType = shortToBytes(Short.valueOf(userB[1]));
+                            byte[] age = shortToBytes(Short.valueOf(userB[2]));;
+                            byte[] numPosts = shortToBytes(Short.valueOf(userB[3]));
+                            byte[] numFollowers = shortToBytes(Short.valueOf(userB[4]));
+                            result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, {0}}, 13 + result.length);
+                        }
+                }
+            case 11: //Error Message
+                switch (msg){
+                    case 1: //register
+                    case 2: //login
+                    case 3: //logout
+                    case 4: //follow/unfollow
+                    case 5: //post
+                    case 6: //pm
+                    case 7: //logstat
+                    case 8: //stat
+                    case 12: //block
+                        result = join(new byte[][]{opcodeByte, msgType}, 4);
+                }
+        }
+        result = join(new byte[][]{result, ";".getBytes()}, result.length +1);
+        return result;
+    }
+
+    private byte[] join(byte[][] b, int length){
+        byte[] allBytes = new byte[length];
+        int startIndex = 0;
+        for(byte[] currB : b){
+            int currLength = currB.length;
+            System.arraycopy(currB, 0, allBytes, startIndex, currLength);
+            startIndex = startIndex + currLength;
+        }
+        return allBytes;
+    }
+
+
+    public byte[] shortToBytes(short num)
+    {
+        byte[] bytesArr = new byte[2];
+        bytesArr[0] = (byte)((num >> 8) & 0xFF);
+        bytesArr[1] = (byte)(num & 0xFF);
+        return bytesArr;
     }
 
     private void pushByte(byte nextByte) {
