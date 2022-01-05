@@ -113,7 +113,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 }
                 break;
             case 6: //PM message
-                String censored = filter(strings[1]);
+                String censored = filter(strings[2]);
                 c = connections.getClientByID(connectionId);
                 Client recipient = connections.getClient(strings[1]);
                 if(c != null && c.isLoggedIn() && c.isFollowing(recipient)) {
@@ -124,7 +124,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                         recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     }
-                    connections.send(connectionId,"10 7");
+                    connections.send(connectionId,"10 6");
                 }else {
                     connections.send(connectionId, "11 6");
                 }
