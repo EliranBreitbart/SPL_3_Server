@@ -47,7 +47,11 @@ public class encdec implements MessageEncoderDecoder<String> {
             case 10: //ACK Message
                 switch (msg){
                     case 1: //register
+                    case 2: //login
                     case 3: //logout
+                    case 5: //post
+                    case 6: //PM
+                    case 12: //BLOCK
                         result = join(new byte[][]{opcodeByte, msgType}, 4);
                         break;
                     case 4: //follow/unfollow
