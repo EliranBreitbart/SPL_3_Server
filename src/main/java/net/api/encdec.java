@@ -70,7 +70,8 @@ public class encdec implements MessageEncoderDecoder<String> {
                             byte[] age = shortToBytes(Short.parseShort(userB[2]));
                             byte[] numPosts = shortToBytes(Short.parseShort(userB[3]));
                             byte[] numFollowers = shortToBytes(Short.parseShort(userB[4]));
-                            result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, "\0".getBytes(StandardCharsets.UTF_8)}, 13 + result.length);
+                            byte[] numFollowing = shortToBytes(Short.parseShort(userB[5]));
+                            result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, numFollowing, "\0".getBytes(StandardCharsets.UTF_8)}, 13 + result.length);
                         }
                         break;
                 }
