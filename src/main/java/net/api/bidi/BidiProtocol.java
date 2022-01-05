@@ -35,6 +35,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         connections.send(connectionId, "11 2");
                     }
                     c.setConnectionID(connectionId);
+                    connections.send(connectionId,"10 2");
                     //send backlog
                     String[] backlog = c.getBackLog();
                     for (String str: backlog) {
@@ -83,6 +84,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                             client.backlog( 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
                         }
                     }
+                    connections.send(connectionId,"10 5");
                     int index = strings[1].indexOf("@");
                     String str = strings[1];
                     while (index >= 0) { //send to @'s
@@ -122,6 +124,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                         recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     }
+                    connections.send(connectionId,"10 7");
                 }else {
                     connections.send(connectionId, "11 6");
                 }
@@ -162,6 +165,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 Client client = connections.getClient(strings[1]);
                 if(client != null){
                     connections.getClientByID(connectionId).block(client);
+                    connections.send(connectionId, "10 12");
                 } else {
                     connections.send(connectionId,"11 12");
                 }
