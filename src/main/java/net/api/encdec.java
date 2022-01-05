@@ -125,17 +125,17 @@ public class encdec implements MessageEncoderDecoder<String> {
             case 6: //PM message
             case 8: //STAT message
             case 12: //Block Message
-                result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length));
+                result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, len));
                 break;
             case 2:
-                result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, bytes.length - 1)) + " " + bytes[bytes.length - 1]; //Login
+                result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, len - 1)) + " " + bytes[len- 1]; //Login
             break;
             case 3: // Logout
             case 7: // Logstat
                 result = String.valueOf(op);
                 break;
             case 4: //Follow/Unfollow
-                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, bytes.length);
+                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, len   );
             break;
         }
         len = 0;
