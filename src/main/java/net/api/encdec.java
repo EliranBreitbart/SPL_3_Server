@@ -34,13 +34,13 @@ public class encdec implements MessageEncoderDecoder<String> {
                     case 0: //PM message
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
                         content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
-                        result = join(new byte[][]{opcodeByte, zero, username, zero, content, zero}, 5 + username.length + content.length);
+                        result = join(new byte[][]{opcodeByte, zero, username, "\0".getBytes(StandardCharsets.UTF_8), content, "\0".getBytes(StandardCharsets.UTF_8)}, 5 + username.length + content.length);
                         break;
                     case 1: //Post message
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
                         one = "1".getBytes(StandardCharsets.UTF_8);
                         content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
-                        result = join(new byte[][]{opcodeByte, one, username, zero, content, zero}, 5 + username.length + content.length);
+                        result = join(new byte[][]{opcodeByte, one, username, "\0".getBytes(StandardCharsets.UTF_8), content, "\0".getBytes(StandardCharsets.UTF_8)}, 5 + username.length + content.length);
                         break;
                 }
                 break;
@@ -56,7 +56,7 @@ public class encdec implements MessageEncoderDecoder<String> {
                         break;
                     case 4: //follow/unfollow
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
-                        result = join(new byte[][]{opcodeByte, msgType, username, zero}, 5 + username.length);
+                        result = join(new byte[][]{opcodeByte, msgType, username, "\0".getBytes(StandardCharsets.UTF_8)}, 5 + username.length);
                         break;
                     case 7: //logstat
                     case 8: //stat
@@ -68,7 +68,7 @@ public class encdec implements MessageEncoderDecoder<String> {
                             byte[] age = shortToBytes(Short.parseShort(userB[2]));
                             byte[] numPosts = shortToBytes(Short.parseShort(userB[3]));
                             byte[] numFollowers = shortToBytes(Short.parseShort(userB[4]));
-                            result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, {0}}, 13 + result.length);
+                            result = join(new byte[][]{result, opCode, msType, age, numPosts, numFollowers, "\0".getBytes(StandardCharsets.UTF_8)}, 13 + result.length);
                         }
                         break;
                 }
