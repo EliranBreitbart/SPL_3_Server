@@ -79,9 +79,9 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     c.saveMessage(strings[1]);
                     for(Client client : c.getFollowers()) {
                         if (client.isLoggedIn()) {
-                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
                         } else{
-                            client.backlog( 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                            client.backlog( 9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
                         }
                     }
                     connections.send(connectionId,"10 5");
@@ -103,9 +103,9 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
 
                         Client client = connections.getClient(name);
                         if (client.isLoggedIn()) {
-                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
                         } else {
-                            client.backlog(9 + " " + 1 + " " + c.getUsername() + " " + strings[1]);
+                            client.backlog(9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
                         }
                     }
                 } else{
@@ -113,15 +113,15 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 }
                 break;
             case 6: //PM message
-                String censored = filter(strings[2]);
+                String censored = filter(message.substring(2+strings[1].length()));
                 c = connections.getClientByID(connectionId);
                 Client recipient = connections.getClient(strings[1]);
                 if(c != null && c.isLoggedIn() && c.isFollowing(recipient)) {
                     if (recipient.isLoggedIn()) {
                         c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
-                        connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + " " + censored);
+                        connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + /*" " +*/censored);
                     } else{
-                        c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
+                        c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " +censored);
                         recipient.backlog(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                     }
                     connections.send(connectionId,"10 6");
@@ -137,7 +137,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     for (Client client : cl) {
                         multiAck+= "10 7 " + client.getAge() + " " + client.getPosts() + " " + client.getNumFollowers() + " " + client.getNumFollowing() + "\0";
                     }
-                    connections.send(connectionId,multiAck);
+                    connections.send(connectionId,multiAck.substring(0,multiAck.length()-1));
                 } else{
                     connections.send(connectionId, "11 7");
                 }
@@ -156,7 +156,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                             break;
                         }
                     }
-                    connections.send(connectionId,multiAck);
+                    connections.send(connectionId,multiAck.substring(0,multiAck.length()-1));
                 } else {
                     connections.send(connectionId, "11 8");
                 }

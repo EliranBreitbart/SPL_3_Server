@@ -33,13 +33,15 @@ public class encdec implements MessageEncoderDecoder<String> {
                 switch (msg){
                     case 0: //PM message
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
-                        content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
+                        content = message.substring(5 + username.length).getBytes(StandardCharsets.UTF_8);
+                        //content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
                         result = join(new byte[][]{opcodeByte, zero, username, "\0".getBytes(StandardCharsets.UTF_8), content, "\0".getBytes(StandardCharsets.UTF_8)}, 5 + username.length + content.length);
                         break;
                     case 1: //Post message
                         username = splitMsg[2].getBytes(StandardCharsets.UTF_8);
                         one = "1".getBytes(StandardCharsets.UTF_8);
-                        content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
+                        content = message.substring(5 + username.length).getBytes(StandardCharsets.UTF_8);
+                        //content = splitMsg[3].getBytes(StandardCharsets.UTF_8);
                         result = join(new byte[][]{opcodeByte, one, username, "\0".getBytes(StandardCharsets.UTF_8), content, "\0".getBytes(StandardCharsets.UTF_8)}, 5 + username.length + content.length);
                         break;
                 }
