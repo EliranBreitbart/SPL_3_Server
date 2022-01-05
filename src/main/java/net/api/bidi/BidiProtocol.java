@@ -66,7 +66,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     if(success){
                         connections.send(connectionId,"10 4 " + strings[2]);
                     } else {
-                        connections.send(connectionId,"11 4");
+                        connections.send(connectionId,"11 4 ");
                     }
                 } else {
                     connections.send(connectionId,"11 4");
@@ -183,7 +183,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
         String str="";
         for (int i = 0; i < words.length; i++) {
             for(String filter : badWords){
-                String noPunc = words[i].replaceAll("[().!?.,]","");
+                String noPunc = words[i].replaceAll("[().!?,]","");
                 if(noPunc.equals(filter)){
                     words[i] = words[i].replace(filter,"<filtered>");
                     break;

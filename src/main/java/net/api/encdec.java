@@ -139,7 +139,7 @@ public class encdec implements MessageEncoderDecoder<String> {
                 result = String.valueOf(op);
                 break;
             case 4: //Follow/Unfollow
-                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, len   );
+                result = String.valueOf(op) + " " + bytes[2] + " " + new String(bytes, 3, len-4   );
             break;
         }
         len = 0;
