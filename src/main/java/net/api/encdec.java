@@ -133,7 +133,7 @@ public class encdec implements MessageEncoderDecoder<String> {
             case 8: //STAT message
             case 12: //Block Message
                 result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, len));
-                break;
+                    break;
             case 2:
                 result = String.valueOf(op) + splitByZero(Arrays.copyOfRange(bytes, 2, len - 1)) + " " + bytes[len- 1]; //Login
             break;
