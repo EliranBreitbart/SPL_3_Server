@@ -9,9 +9,8 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
     public static final String[] badWords = {"war", "Trump", "gnome", "assignment", "spl"};
     @Override
     public void start(int connectionId, Connections<String> connections) {
-        //TODO use the getInstance
         this.connectionId = connectionId;
-        this.connections = (ConnectionsImpl) connections;
+        this.connections = ConnectionsImpl.getInstance();
     }
 
     @Override
@@ -29,17 +28,18 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     }
                 break;
             case 2: //Login
-                if(strings[3] == "1"){
+                if(strings[3].equals("1")){
                     c = connections.getClient(strings[1]);
                     if(c == null || !c.login(strings[2])){
                         connections.send(connectionId, "11 2");
-                    }
-                    c.setConnectionID(connectionId);
-                    connections.send(connectionId,"10 2");
-                    //send backlog
-                    String[] backlog = c.getBackLog();
-                    for (String str: backlog) {
-                        connections.send(connectionId,str);
+                    } else {
+                        c.setConnectionID(connectionId);
+                        connections.send(connectionId, "10 2");
+                        //send backlog
+                        String[] backlog = c.getBackLog();
+                        for (String str : backlog) {
+                            connections.send(connectionId, str);
+                        }
                     }
                 } else {
                     connections.send(connectionId, "11 2");
@@ -58,7 +58,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 c = connections.getClientByID(connectionId);
                 if(c!= null && c.isLoggedIn()){
                     boolean success;
-                    if(strings[1] == "0") {
+                    if(strings[1].equals("0")) {
                         success = c.follow(connections.getClient(strings[2]));
                     } else{
                         success = c.unfollow(connections.getClient(strings[2]));
