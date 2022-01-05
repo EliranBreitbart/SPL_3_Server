@@ -78,7 +78,7 @@ public class Client {
      * @return true: following successful, false: already following.
      */
     public boolean follow(Client client){
-        if(following.contains(client)){
+        if(following.contains(client) || blocked.contains(client)){
             return false;
         }
         following.add(client);

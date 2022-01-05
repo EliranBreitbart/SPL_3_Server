@@ -78,6 +78,16 @@ public class ConnectionsImpl  implements Connections<String>{
         }
         return cl.toArray(new Client[cl.size()]);
     }
+    public void removeHandler(int connectionID){
+        if(connections.contains(connectionID)) {
+            try {
+                connections.get(connectionID).close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connections.remove(connectionID);
+        }
+    }
 }
 
 

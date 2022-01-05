@@ -53,6 +53,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 } else {
                     connections.send(connectionId, "11 3");
                 }
+                connections.removeHandler(connectionId);
                 break;
             case 4: // follow/unfollow
                 c = connections.getClientByID(connectionId);
@@ -85,8 +86,8 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         }
                     }
                     connections.send(connectionId,"10 5");
-                    int index = strings[1].indexOf("@");
-                    String str = strings[1];
+                    int index = message.substring(2).indexOf("@");
+                    String str = message.substring(2);
                     while (index >= 0) { //send to @'s
                         String name = "";
                         if (str.indexOf(" ") != -1) {
