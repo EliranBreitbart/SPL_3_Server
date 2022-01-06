@@ -44,7 +44,7 @@ public class ConnectionsImpl  implements Connections<String>{
 
     @Override
     public void disconnect(int connectionId) {
-        //TODO implement
+        removeHandler(connectionId);
     }
     public boolean register(Client client){
         if(clients.containsKey(client.getUsername())){
