@@ -144,6 +144,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 }
                 break;
             case 8: // stat
+                boolean isError = false;
                 String[] usernames = strings[1].split("\\|");
                 c = connections.getClientByID(connectionId);
                 if(c!=null && c.isLoggedIn()){
@@ -154,10 +155,13 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                             multiAck+= "10 8 " + client.getAge() + " " + client.getPosts() + " " + client.getNumFollowers() + " " + client.getNumFollowing() + "\0";
                         } else {
                             multiAck = "11 8";
+                            connections.send(connectionId,multiAck);
+                            isError = true;
                             break;
                         }
                     }
-                    connections.send(connectionId,multiAck.substring(0,multiAck.length()-1));
+                    if(!isError)
+                        connections.send(connectionId,multiAck.substring(0,multiAck.length()-1));
                 } else {
                     connections.send(connectionId, "11 8");
                 }

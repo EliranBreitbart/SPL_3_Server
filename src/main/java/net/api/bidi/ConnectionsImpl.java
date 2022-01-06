@@ -61,7 +61,9 @@ public class ConnectionsImpl  implements Connections<String>{
         return true;
     }
     public Client getClient(String username){
-        return clients.get(username);
+        if(clients.containsKey(username))
+            return clients.get(username);
+        return null;
     }
     public Client getClientByID(int id){
         for (Map.Entry<String,Client> username: clients.entrySet()) {
