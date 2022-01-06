@@ -118,7 +118,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                 String censored = filter(message.substring(2+strings[1].length()));
                 c = connections.getClientByID(connectionId);
                 Client recipient = connections.getClient(strings[1]);
-                if(c != null && c.isLoggedIn() && c.isFollowing(recipient)) {
+                if(c != null && c.isFollowing(recipient)) {
                     if (recipient.isLoggedIn()) {
                         c.saveMessage(9 + " " + 0 + " " + c.getUsername() + " " + censored);
                         connections.send(recipient.getConnectionID(), 9 + " " + 0 + " " + c.getUsername() + /*" " +*/censored);
