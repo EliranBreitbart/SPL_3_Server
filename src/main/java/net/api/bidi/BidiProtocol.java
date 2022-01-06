@@ -95,7 +95,6 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         } else {
                             name = str.substring(index + 1);
                         }
-                        System.out.println(name);
                         str = str.substring(str.indexOf("@") + 1);
                         if (str.indexOf(" ") != -1) {
                             str = str.substring(str.indexOf(" ") + 1);
@@ -103,10 +102,12 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                         index = str.indexOf("@");
 
                         Client client = connections.getClient(name);
-                        if (client.isLoggedIn()) {
-                            connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
-                        } else {
-                            client.backlog(9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
+                        if(client != null) {
+                            if (client.isLoggedIn()) {
+                                connections.send(client.getConnectionID(), 9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
+                            } else {
+                                client.backlog(9 + " " + 1 + " " + c.getUsername() + " " + message.substring(2));
+                            }
                         }
                     }
                 } else{
