@@ -2,6 +2,7 @@ package net.srv;
 
 import net.api.MessageEncoderDecoder;
 import net.api.bidi.BidiMessagingProtocol;
+import net.api.bidi.ConnectionsImpl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

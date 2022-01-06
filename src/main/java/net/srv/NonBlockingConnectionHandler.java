@@ -2,15 +2,20 @@ package net.srv;
 
 import net.api.MessageEncoderDecoder;
 import net.api.bidi.BidiMessagingProtocol;
+import net.api.bidi.Connections;
+import net.api.bidi.ConnectionsImpl;
+
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.sql.SQLOutput;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
-
+    private static int idCounter = 0;
     private static final int BUFFER_ALLOCATION_SIZE = 1 << 13; //8k
     private static final ConcurrentLinkedQueue<ByteBuffer> BUFFER_POOL = new ConcurrentLinkedQueue<>();
 
@@ -20,6 +25,8 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private final SocketChannel chan;
     private final Reactor reactor;
 
+
+    private final int connectionID;
     public NonBlockingConnectionHandler(
             MessageEncoderDecoder<T> reader,
             BidiMessagingProtocol<T> protocol,
@@ -29,6 +36,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
         this.encdec = reader;
         this.protocol = protocol;
         this.reactor = reactor;
+        connectionID = idCounter;
+        idCounter++;
+        protocol.start(connectionID, (Connections<T>) ConnectionsImpl.getInstance());
+        ConnectionsImpl.getInstance().register(this);
     }
 
     public Runnable continueRead() {
@@ -48,6 +59,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
                     while (buf.hasRemaining()) {
                         T nextMessage = encdec.decodeNextByte(buf.get());
                         if (nextMessage != null) {
+                            System.out.println(nextMessage);
                             protocol.process(nextMessage);
                         }
                     }
@@ -121,6 +133,7 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
 
     @Override
     public int getID() {
-        return 0;
+        return connectionID;
     }
+
 }
