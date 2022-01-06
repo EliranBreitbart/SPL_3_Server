@@ -91,7 +91,7 @@ public class BidiProtocol implements BidiMessagingProtocol<String>{
                     while (index >= 0) { //send to @'s
                         String name = "";
                         if (str.indexOf(" ") != -1) {
-                            name = str.substring(index + 1, str.indexOf(" "));
+                            name = str.substring(index + 1, str.indexOf(" ", index+1));
                         } else {
                             name = str.substring(index + 1);
                         }
